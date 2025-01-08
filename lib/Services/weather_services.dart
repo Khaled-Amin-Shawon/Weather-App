@@ -7,9 +7,10 @@ import 'package:http/http.dart' as http;
 
 class WeatherServices {
   static const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
-  final String apiKey;
+  // final String apiKey;
+  final String apiKey = "283ba4214baed55e8483c62db1439887";
 
-  WeatherServices(this.apiKey);
+  WeatherServices();
 
   Future<Weather> getWeather(String cityName) async {
     final response = await http

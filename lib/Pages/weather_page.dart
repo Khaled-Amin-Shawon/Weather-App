@@ -12,8 +12,9 @@ class WeatherPage extends StatefulWidget {
 class _WeatherPageState extends State<WeatherPage> {
   // Api key for openweathermap
   final apiKey = "283ba4214baed55e8483c62db1439887";
-  final _weatherService = WeatherServices("283ba4214baed55e8483c62db1439887");
+  final _weatherService = WeatherServices();
   Weather? _Weather;
+  String? _errorMessage;
 
   // fetch the weather
   _fetchWeather() async {
@@ -24,8 +25,12 @@ class _WeatherPageState extends State<WeatherPage> {
       final weather = await _weatherService.getWeather(cityName);
       setState(() {
         _Weather = weather;
+        _errorMessage = null;
       });
     } catch (e) {
+      setState(() {
+        _errorMessage = 'Failed to load weather data';
+      });
       if (kDebugMode) {
         print(e);
       }
@@ -50,10 +55,19 @@ class _WeatherPageState extends State<WeatherPage> {
       ),
       body: Center(
         child: _Weather == null
-            ? const CircularProgressIndicator()
+            ? _errorMessage != null
+                ? Text(_errorMessage!, style: TextStyle(color: Colors.red, fontSize: 20))
+                : const CircularProgressIndicator()
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Text(
+                    "Welcome to the Weather App",
+                    style: TextStyle(
+                      fontSize: 30,
+                      color: Colors.grey,
+                    ),
+                  ),
                   Text(
                     _Weather!.cityName,
                     style: const TextStyle(fontSize: 30),
