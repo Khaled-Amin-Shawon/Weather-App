@@ -12,73 +12,76 @@ class WeatherServices {
   WeatherServices();
 
   Future<Weather> getWeather(String cityName) async {
-  try {
-    final response = await http
-        .get(Uri.parse('$BASE_URL?q=$cityName&appid=$apiKey&units=metric'))
-        .timeout(const Duration(seconds: 10));
+    try {
+      final response = await http
+          .get(Uri.parse('$BASE_URL?q=$cityName&appid=$apiKey&units=metric'))
+          .timeout(const Duration(seconds: 10));
 
-    if (response.statusCode == 200) {
-      return Weather.fromJson(jsonDecode(response.body));
-    } else {
-      final errorData = jsonDecode(response.body);
-      throw Exception('Error ${response.statusCode}: ${errorData["message"]}');
+      if (response.statusCode == 200) {
+        return Weather.fromJson(jsonDecode(response.body));
+      } else {
+        final errorData = jsonDecode(response.body);
+        throw Exception(
+            'Error ${response.statusCode}: ${errorData["message"]}');
+      }
+    } catch (e) {
+      print('Error fetching weather: $e');
+      throw Exception('Failed to load weather data. Please try again later.');
     }
-  } catch (e) {
-    print('Error fetching weather: $e');
-    throw Exception('Failed to load weather data. Please try again later.');
   }
-}
-
 
   Future<String> getCurrentCity() async {
-  try {
-    // Check internet connectivity
-    var connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult == ConnectivityResult.none) {
-      throw Exception('No internet connection.');
-    }
-
-    // Ensure location services are enabled
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      throw Exception('Location services are disabled. Please enable them.');
-    }
-
-    // Check and request permissions
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        throw Exception('Location permissions are denied.');
+    try {
+      // Check internet connectivity
+      var connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult == ConnectivityResult.none) {
+        throw Exception('No internet connection.');
       }
+
+      // Ensure location services are enabled
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        throw Exception('Location services are disabled. Please enable them.');
+      }
+
+      // Check and request permissions
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          throw Exception('Location permissions are denied.');
+        }
+      }
+      if (permission == LocationPermission.deniedForever) {
+        throw Exception(
+            'Location permissions are permanently denied. Please enable them in settings.');
+      }
+
+      // Get current location
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      print('Latitude: ${position.latitude}, Longitude: ${position.longitude}');
+
+      // Convert coordinates to placemarks
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
+
+      if (placemarks.isEmpty) {
+        throw Exception('No placemarks found for the current location.');
+      }
+
+      // Fetch the locality or fallback to other fields
+      String? city = placemarks.first.locality ??
+          placemarks.first.subAdministrativeArea ??
+          placemarks.first.administrativeArea;
+
+      if (city == null || city.isEmpty) {
+        throw Exception('City name could not be determined.');
+      }
+
+      return city;
+    } catch (e) {
+      print('Failed to fetch city name: $e');
+      return 'Dinajpur'; // Default city
     }
-    if (permission == LocationPermission.deniedForever) {
-      throw Exception(
-          'Location permissions are permanently denied. Please enable them in settings.');
-    }
-
-    // Get current location
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.bestForNavigation);
-    print('Latitude: ${position.latitude}, Longitude: ${position.longitude}');
-
-    // Convert coordinates to placemarks
-    List<Placemark> placemarks =
-        await placemarkFromCoordinates(position.latitude, position.longitude);
-
-    // Try fetching the locality or fallback to other fields
-    String? city = placemarks[0].locality ??
-        placemarks[0].subAdministrativeArea ??
-        placemarks[0].administrativeArea;
-
-    if (city == null || city.isEmpty) {
-      throw Exception('City name could not be determined.');
-    }
-    return city;
-  } catch (e) {
-    print('Failed to fetch city name: $e');
-    return 'Dinajpur'; // Default city
   }
-}
-
 }
