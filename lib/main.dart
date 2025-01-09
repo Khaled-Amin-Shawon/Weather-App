@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:weather_app/Pages/weather_page.dart';
+import 'package:weather_app/Pages/splash.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,11 +12,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Weather Application',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const WeatherPage(),
+      title: 'MoodyWeather',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: const SplashScreen(),
     );
   }
 }

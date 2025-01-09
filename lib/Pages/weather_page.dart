@@ -1,93 +1,144 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:weather_app/Models/weather_models.dart';
 import 'package:weather_app/Services/weather_services.dart';
 
 class WeatherPage extends StatefulWidget {
   const WeatherPage({super.key});
+
   @override
   _WeatherPageState createState() => _WeatherPageState();
 }
 
 class _WeatherPageState extends State<WeatherPage> {
-  // Api key for openweathermap
-  final apiKey = "283ba4214baed55e8483c62db1439887";
-  final _weatherService = WeatherServices();
-  Weather? _Weather;
+  final WeatherServices _weatherService = WeatherServices();
+  Weather? _weather;
   String? _errorMessage;
+  bool _isLoading = false;
 
-  // fetch the weather
-  _fetchWeather() async {
-    final cityName = await _weatherService.getCurrentCity();
+  // Fetch the weather for the current location
+  Future<void> _fetchWeather() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+      _weather = null;
+    });
 
-    // get weather for city
     try {
+      final cityName = await _weatherService.getCurrentCity();
       final weather = await _weatherService.getWeather(cityName);
       setState(() {
-        _Weather = weather;
-        _errorMessage = null;
+        _weather = weather;
+        _isLoading = false;
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to load weather data';
+        _errorMessage = 'Failed to load weather data. Please try again.';
+        _isLoading = false;
       });
-      if (kDebugMode) {
-        print(e);
-      }
     }
   }
 
-  // Weather Animation
-
-  // fetch the weather on page load
   @override
   void initState() {
     super.initState();
     _fetchWeather();
   }
 
-  // build the UI
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Weather Application'),
+        title: const Text('Current Weather'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _fetchWeather,
+          ),
+        ],
       ),
-      body: Center(
-        child: _Weather == null
-            ? _errorMessage != null
-                ? Text(_errorMessage!, style: TextStyle(color: Colors.red, fontSize: 20))
-                : const CircularProgressIndicator()
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Welcome to the Weather App",
-                    style: TextStyle(
-                      fontSize: 30,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  Text(
-                    _Weather!.cityName,
-                    style: const TextStyle(fontSize: 30),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    '${_Weather!.temperature.round()}°C',
-                    style: const TextStyle(fontSize: 30),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    _Weather!.mainCondition,
-                    style: const TextStyle(fontSize: 30),
-                  ),
-                  //   const SizedBox(height: 20),
-                  //   Image.network(
-                  //       'https://openweathermap.org/img/w/${_Weather!.weatherIcon}.png'),
-                  //
-                ],
-              ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.lightBlueAccent, Colors.white],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: _isLoading
+                ? const CircularProgressIndicator()
+                : _errorMessage != null
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _errorMessage!,
+                            style: const TextStyle(
+                                color: Colors.red, fontSize: 18),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: _fetchWeather,
+                            child: const Text('Retry'),
+                          ),
+                        ],
+                      )
+                    : _weather == null
+                        ? const SizedBox()
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ShaderMask(
+                                shaderCallback: (bounds) =>
+                                    const LinearGradient(
+                                  colors: [Colors.blue, Colors.red],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ).createShader(bounds),
+                                child: const Text(
+                                  'Weather Details',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Text(
+                                _weather!.cityName,
+                                style: const TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Text(
+                                '${_weather!.temperature.round()}°C',
+                                style: const TextStyle(
+                                  fontSize: 50,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                _weather!.mainCondition,
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                              const SizedBox(height: 20),
+                              if (_weather!.weatherIcon.isNotEmpty)
+                                Image.network(
+                                  'https://openweathermap.org/img/wn/${_weather!.weatherIcon}@2x.png',
+                                  height: 100,
+                                  width: 100,
+                                ),
+                            ],
+                          ),
+          ),
+        ),
       ),
     );
   }
