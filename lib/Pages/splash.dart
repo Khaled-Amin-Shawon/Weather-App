@@ -44,11 +44,16 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.network(
-                "https://cdn-icons-png.flaticon.com/512/3845/3845731.png",
-                height: 150,
-                width: 150,
-              ),
+              // Image.network(
+              //   "https://cdn-icons-png.flaticon.com/512/3845/3845731.png",
+              //   height: 150,
+              //   width: 150,
+              // ),
+              Image.asset(
+                  "assets/ic_launcher.png",
+                  width: 150,
+                  height: 150,
+                ),
               const SizedBox(height: 20),
               ShaderMask(
                 shaderCallback: (bounds) => const LinearGradient(
