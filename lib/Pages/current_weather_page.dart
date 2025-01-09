@@ -31,6 +31,7 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 46, 6, 114),
@@ -87,10 +88,13 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
                         ])),
                     child: Center(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Icon(Icons.location_on, color: Colors.white,),
-                          const SizedBox(height: 20),
+                          Image.asset(
+                            "assets/current_Weather_page.png",
+                            height: size.height*0.4,
+                            width: size.width*0.4,
+                          ),
                           Text(
                             _currentWeather!.cityName,
                             style: const TextStyle(
