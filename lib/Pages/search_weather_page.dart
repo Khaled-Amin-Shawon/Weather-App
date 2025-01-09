@@ -164,12 +164,12 @@ class _SearchWeatherPageState extends State<SearchWeatherPage> {
                                     const SizedBox(height: 10),
                                     Text(
                                       'Condition:',
-                                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
                                     ),
                                     const SizedBox(height: 10),
                                     Text(
                                       _searchedWeather!.mainCondition,
-                                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
                                     ),
                                     const SizedBox(height: 20),
                                     if (_searchedWeather!.weatherIcon.isNotEmpty)
