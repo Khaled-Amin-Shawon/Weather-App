@@ -46,8 +46,8 @@ class _SplashScreenState extends State<SplashScreen> {
             children: [
               Image.network(
                 "https://cdn-icons-png.flaticon.com/512/3845/3845731.png",
-                height: 120,
-                width: 120,
+                height: 150,
+                width: 150,
               ),
               const SizedBox(height: 20),
               ShaderMask(
@@ -64,18 +64,18 @@ class _SplashScreenState extends State<SplashScreen> {
                 child: const Text(
                   'MoodyWeather',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 32,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 40),
               const Text(
                 'Your Ultimate Weather Companion',
                 style: TextStyle(
                   fontSize: 18,
-                  color: Colors.white70,
+                  color: Color.fromARGB(129, 255, 255, 255),
                 ),
               ),
               const SizedBox(height: 50),
