@@ -27,8 +27,13 @@ class HomePage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.network(
-                  "https://cdn-icons-png.flaticon.com/512/3845/3845731.png",
+                // Image.network(
+                //   "https://cdn-icons-png.flaticon.com/512/3845/3845731.png",
+                //   width: 200,
+                //   height: 200,
+                // ),
+                Image.asset(
+                  "assets/ic_launcher.png",
                   width: 200,
                   height: 200,
                 ),
