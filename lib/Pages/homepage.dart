@@ -39,7 +39,7 @@ class HomePage extends StatelessWidget {
 
                         ),
                         Text(
-                          "Hi , Khaled ",
+                          "Hi , Khaled amin shawon",
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
